@@ -6,3 +6,7 @@ cmake-build-*/
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/vcs.xml
 /.idea/workspace.xml
+build/
+*.user
+.vs/
+buffer.json
