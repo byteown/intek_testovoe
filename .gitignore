@@ -1,0 +1,8 @@
+cmake-build-*/
+/.idea/editor.xml
+/.idea/misc.xml
+/.idea/intek_testovoe.iml
+/.idea/modules.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
