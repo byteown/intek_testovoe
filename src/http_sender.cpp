@@ -18,7 +18,7 @@ SendResult HttpSender::post(const std::string &body) {
 
     int status = result->status;
 
-    if (status >= 200 && < 300) return {true, status, ""};
+    if (status >= 200 && status < 300) return {true, status, ""};
 
     return {false, status, ""};
 }

@@ -27,6 +27,13 @@ inline void to_json(nlohmann::ordered_json& j, const ActivitySample& s) {
     j["user_active"] = s.user_active;
 }
 
+inline void from_json(const nlohmann::ordered_json& j, ActivitySample& s) {
+    s.time = j.at("time").get<std::string>();
+    s.process_name = j.at("process_name").get<std::string>();
+    s.window_title = j.at("window_title").get<std::string>();
+    s.user_active = j.at("user_active").get<bool>();
+}
+
 inline std::string getTime() {
     std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
 

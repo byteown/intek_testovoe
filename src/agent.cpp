@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "agent/config.h"
+#include "agent/disk_buffer.h"
 #include "agent/platform_monitor.h"
 
 Agent::Agent() : monitor_(createPlatformMonitor()) {
@@ -61,6 +62,7 @@ void Agent::collectorLoop() {
 void Agent::senderLoop() {
     std::vector<ActivitySample> activities;
     bool stopping;
+    DiskBuffer disk;
 
     while (true) {
         {
@@ -71,15 +73,28 @@ void Agent::senderLoop() {
             stopping = stopped_;
         }
 
-        if (!activities.empty()) {
-            std::string j = buildBatch(monitor_->hostname(), activities);
-            SendResult result = httpSender_.post(j);
+        std::vector<ActivitySample> all = disk.load();
+        all.insert(all.end(), activities.begin(), activities.end());
 
-            std::cout << activities.size() << " activities sent" << std::endl;
-            if (result.ok) std::cout << result.ok << " | " << result.status << " | " << std::endl;
-            else std::cout << result.ok << " | " << result.status << " | " << result.error << std::endl;
+        if (stopping) {
+            disk.save(all);
+            return;
         }
 
-        if (stopping) return;
+        if (all.empty()) {
+            continue;
+        }
+
+        std::string j = buildBatch(monitor_->hostname(), all);
+        SendResult result = httpSender_.post(j);
+
+        if (result.ok) {
+            std::cout << "Sent " << all.size() << " activities, status " << result.status << std::endl;
+            disk.clear();
+        }
+        else {
+            int n = disk.save(all);
+            std::cout << "Can't sent: " << result.error << ", " << n << " in buffer" << std::endl;
+        }
     }
 }

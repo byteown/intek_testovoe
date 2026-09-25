@@ -13,6 +13,8 @@ constexpr std::size_t collect_limit = 10;
 constexpr auto host = "127.0.0.1";
 constexpr int port = 8080;
 constexpr auto endpoint_path = "/";
+constexpr auto file_buffer_path = "buffer.json";
+constexpr std::size_t buffer_limit = 100;
 
 
 #endif //INTEK_TESTOVOE_CONFIG_H
