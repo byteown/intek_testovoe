@@ -30,7 +30,6 @@ add_executable(intek_testovoe
         src/main.cpp
         include/agent/activity_sample.h
         include/agent/platform_monitor.h
-        include/agent/sample_queue.h
         include/agent/disk_buffer.h
         include/agent/http_sender.h
         include/agent/config.h
@@ -51,6 +50,14 @@ if(WIN32)
             _WIN32_WINNT=0x0601
             WIN32_LEAN_AND_MEAN NOMINMAX
     )
+    if(MINGW)
+        get_filename_component(MINGW_BIN "${CMAKE_CXX_COMPILER}" DIRECTORY)
+        foreach(dll libwinpthread-1.dll libstdc++-6.dll libgcc_s_seh-1.dll)
+            add_custom_command(TARGET intek_testovoe POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${MINGW_BIN}/${dll}" $<TARGET_FILE_DIR:intek_testovoe>)
+        endforeach()
+    endif()
 elseif(UNIX)
     target_sources(intek_testovoe PRIVATE
             src/platform/x11_monitor.cpp

@@ -9,7 +9,7 @@
 
 constexpr auto collect_interval = std::chrono::seconds(5);
 constexpr auto send_interval = std::chrono::seconds(30);
-constexpr int collect_limit = 10;
+constexpr std::size_t collect_limit = 10;
 
 
 #endif //INTEK_TESTOVOE_CONFIG_H

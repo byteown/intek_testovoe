@@ -1,42 +1,34 @@
-#include <chrono>
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
-#include <iostream>
-#include <thread>
+#include <csignal>
+#include <atomic>
 
-#include "agent/activity_sample.h"
-#include "agent/platform_monitor.h"
+#include "agent/agent.h"
+
+std::atomic<bool> stopping{false};
+
+void setStop(int v) {
+    stopping = true;
+}
 
 int main() {
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     #endif
 
-    std::unique_ptr<IPlatformMonitor> monitor = createPlatformMonitor();
+    std::signal(SIGINT, setStop);
+    std::signal(SIGTERM, setStop);
 
-    std::chrono::steady_clock::time_point next = std::chrono::steady_clock::now();
+    Agent agent;
+    agent.start();
 
-    std::vector<ActivitySample> activities;
+    while (!stopping) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
-    FocusInfo info = monitor->foregroundWindow();
-    activities.push_back(ActivitySample{getTime(), info.process_name, info.window_title, monitor->idleMillis() < 5000});
-    next += std::chrono::seconds(5);
-    std::this_thread::sleep_until(next);
-
-    info = monitor->foregroundWindow();
-    activities.push_back(ActivitySample{getTime(), info.process_name, info.window_title, monitor->idleMillis() < 5000});
-    next += std::chrono::seconds(5);
-    std::this_thread::sleep_until(next);
-
-    info = monitor->foregroundWindow();
-    activities.push_back(ActivitySample{getTime(), info.process_name, info.window_title, monitor->idleMillis() < 5000});
-    next += std::chrono::seconds(5);
-    std::this_thread::sleep_until(next);
-
-    std::cout << buildBatch(monitor->hostname(), activities) << std::endl;
+    agent.stop();
 
     return 0;
 }
