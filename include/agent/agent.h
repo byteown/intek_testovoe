@@ -10,6 +10,7 @@
 #include <thread>
 
 #include "activity_sample.h"
+#include "http_sender.h"
 #include "platform_monitor.h"
 
 
@@ -27,6 +28,7 @@ private:
     std::deque<ActivitySample> samples_;
     bool stopped_ = false;
     std::thread collector_, sender_;
+    HttpSender httpSender_;
 
     void collectorLoop();
     void senderLoop();

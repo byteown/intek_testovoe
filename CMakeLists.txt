@@ -23,6 +23,7 @@ FetchContent_Declare(
 set(HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF CACHE BOOL "" FORCE)
 set(HTTPLIB_USE_ZLIB_IF_AVAILABLE OFF CACHE BOOL "" FORCE)
 set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF CACHE BOOL "" FORCE)
+set(HTTPLIB_USE_NON_BLOCKING_GETADDRINFO OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(httplib)
 
@@ -47,7 +48,7 @@ if(WIN32)
             user32
     )
     target_compile_definitions(intek_testovoe PRIVATE
-            _WIN32_WINNT=0x0601
+            _WIN32_WINNT=0x0A00
             WIN32_LEAN_AND_MEAN NOMINMAX
     )
     if(MINGW)

@@ -9,7 +9,9 @@
 #include "agent/config.h"
 #include "agent/platform_monitor.h"
 
-Agent::Agent() : monitor_(createPlatformMonitor()) {}
+Agent::Agent() : monitor_(createPlatformMonitor()) {
+    httpSender_ = HttpSender();
+}
 
 Agent::~Agent() {
     this->stop();
@@ -70,7 +72,12 @@ void Agent::senderLoop() {
         }
 
         if (!activities.empty()) {
-            std::cout << buildBatch(monitor_->hostname(), activities) << std::endl;
+            std::string j = buildBatch(monitor_->hostname(), activities);
+            SendResult result = httpSender_.post(j);
+
+            std::cout << activities.size() << " activities sent" << std::endl;
+            if (result.ok) std::cout << result.ok << " | " << result.status << " | " << std::endl;
+            else std::cout << result.ok << " | " << result.status << " | " << result.error << std::endl;
         }
 
         if (stopping) return;
